@@ -35,18 +35,13 @@ const Login = () => {
         }
     };
 
-    const handleInput = (evt) => {
-        console.log(evt.target.value);
-        setUsername(evt.target.value);
-    };
-
     return (
         <div>
             <h1>Welcome to the Bubble App!</h1>
             <div data-testid="loginForm" className="login-form">
                 <h2>Please Login to Bubble</h2>
                 <form onSubmit={doLogin}>
-                    <input type="text" name="username" id="username" placeholder="username" value={username} onChange={handleInput}/>
+                    <input type="text" name="username" id="username" placeholder="username" value={username} onChange={e => setUsername(e.target.value)}/>
                     <input type="password" name="password" id="password" placeholder="password" value={password} onChange={e => setPassword(e.target.value)}/>
                     <button type="submit" id="submit">Login</button>
                 </form>
