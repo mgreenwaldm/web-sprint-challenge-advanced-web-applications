@@ -2,22 +2,35 @@ import React, { useEffect, useState } from "react";
 
 import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
-
-import { editColorService, deleteColorService } from '../services/colorServices';
 import fetchColorService from '../services/fetchColorService';
+
+import {api} from '../helpers/axiosWithAuth';
 
 const BubblePage = () => {
   const [colors, setColors] = useState([]);
   const [editing, setEditing] = useState(false);
 
+  useEffect(async ()=>{
+    await loadColors();
+  }, []);
+
+  const loadColors = async () => {
+    const result = await fetchColorService();
+    setColors(result);
+  }
+
   const toggleEdit = (value) => {
     setEditing(value);
   };
 
-  const saveEdit = (editColor) => {
+  const saveEdit = async (editColor) => {
+    await api.put(`http://localhost:5000/api/colors/${editColor.id}`, editColor);
+    await loadColors();
   };
 
-  const deleteColor = (colorToDelete) => {
+  const deleteColor = async (colorToDelete) => {
+    await api.delete(`http://localhost:5000/api/colors/${colorToDelete.id}`);
+    await loadColors();
   };
 
   return (
@@ -32,4 +45,4 @@ export default BubblePage;
 
 //Task List:
 //1. When the component mounts, make an axios call to retrieve all color data and push to state.
-//2. Complete saveEdit, deleteColor functions
+//2. Complete toggleEdit, saveEdit, deleteColor and functions

@@ -1,8 +1,5 @@
 import { rest } from "msw";
 
-const token =
-  "ahuBHejkJJiMDhmODZhZi0zaeLTQ4ZfeaseOGZgesai1jZWYgrTA07i73Gebhu98";
-
 let colors = [
   {
     color: "aliceblue",
@@ -85,22 +82,30 @@ let colors = [
 
 let nextId = 12;
 
-function authenticator(req) {
-  const { authorization } = req.headers.map;
-  return (authorization === token);
+const urlBase = 'http://localhost:5000/api';
+
+const correctCredientials = {
+  username: "Lambda",
+  password: "School",
+  token:"ahuBHejkJJiMDhmODZhZi0zaeLTQ4ZfeaseOGZgesai1jZWYgrTA07i73Gebhu98"
 }
 
-const urlBase = 'http://localhost:5000/api';
+
+function authenticator(req) {
+  const { authorization } = req.headers.map;
+  return (authorization === correctCredientials.token);
+}
+
 
 export const handlers = [
   // Handles a POST /login request
   rest.post(`${urlBase}/login`, (req, res, ctx) => {
     const { username, password } = req.body;
-    if (username === "Lambda" && password === "School") {
+    if (username === correctCredientials.username && password === correctCredientials.password) {
       return res(
           ctx.status(200),
           ctx.json({
-              payload: token,
+              payload: correctCredientials.token,
           }))
     } else {
         return res(
@@ -109,6 +114,23 @@ export const handlers = [
         );
     }
   }),
+
+  rest.post(`${urlBase}/logout`, (req, res, ctx) => {
+    if (authenticator(req)) {
+      return res(
+        ctx.status(200),
+        ctx.json({
+            payload: correctCredientials.token,
+        })
+      );
+    } else {
+      res(
+        ctx.status(403),
+        ctx.json({ error: "User must be logged in to do that." })
+      )
+    }
+  }),
+
   // Handles a GET /user request
   rest.get(`${urlBase}/colors`, (req, res, ctx) => {
     if (authenticator(req)) {
@@ -198,5 +220,5 @@ export const handlers = [
       ctx.status(200),
       ctx.json("The App is working!")
     );
-  }),
+  })
 ];
